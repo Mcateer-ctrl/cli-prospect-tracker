@@ -1,0 +1,16 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allows read and write access to any document in the prospects collection
+    match /prospects/{document=**} {
+      allow read, write: if true;
+    }
+
+    // Allows read and write access to the specific prospectOptions document in the settings collection
+    match /settings/prospectOptions {
+       allow read, write: if true;
+    }
+  }
+}
