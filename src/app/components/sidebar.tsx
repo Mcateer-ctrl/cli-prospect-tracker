@@ -11,7 +11,9 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Users, Calendar, Pipette, Settings } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, Pipette, Settings, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -22,6 +24,20 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger className="fixed top-4 left-4 z-50 bg-white rounded-md shadow-md">
+          <Menu className="h-6 w-6" />
+        </SheetTrigger>
+        <SheetContent side="left" className="w-56 p-0">
+          <MobileSidebarContent pathname={pathname} />
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   return (
     <Sidebar collapsible="icon">
@@ -54,8 +70,37 @@ export function AppSidebar() {
 }
 
 
+function MobileSidebarContent({ pathname }: { pathname: string }) {
+  return (
+    <div className="h-full">
+      <SidebarHeader>
+        <ButtonAsTitle />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          {navItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <SheetTrigger asChild>
+                <Link href={item.href}>
+                  <SidebarMenuButton
+                    isActive={pathname === item.href}
+                    className="w-full justify-start"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SheetTrigger>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+    </div>
+  );
+}
+
 function ButtonAsTitle() {
-    return (
+  return (
         <div
         className="flex items-center gap-2 font-semibold text-lg overflow-hidden whitespace-nowrap"
         >
