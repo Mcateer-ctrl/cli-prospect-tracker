@@ -284,7 +284,7 @@ export function ProspectFormDialog({ isOpen, onOpenChange, onSubmit, prospect }:
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea rows={4} placeholder="e.g. Discussed how many millions you will make with travel" {...field} />
+                    <Textarea rows={4} placeholder="" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -297,7 +297,7 @@ export function ProspectFormDialog({ isOpen, onOpenChange, onSubmit, prospect }:
                 <FormItem>
                   <FormLabel>Pain Points</FormLabel>
                   <FormControl>
-                    <Textarea rows={2} placeholder="e.g. They are a dick." {...field} value={field.value ?? ''} />
+                    <Textarea rows={2} placeholder="" {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -310,7 +310,7 @@ export function ProspectFormDialog({ isOpen, onOpenChange, onSubmit, prospect }:
                 <FormItem>
                   <FormLabel>Objections</FormLabel>
                   <FormControl>
-                    <Textarea rows={2} placeholder="e.g. They hate travel" {...field} value={field.value ?? ''}/>
+                    <Textarea rows={2} placeholder="" {...field} value={field.value ?? ''}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
