@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlusCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { useProspects } from '@/lib/hooks/use-prospects';
+import { useSettings } from '@/lib/hooks/use-settings';
 import { Prospect, ProspectStatus, WarmColdStatus } from '@/lib/types';
 import { DataTable } from './components/data-table';
 import { columns } from './components/columns';
-import { ProspectFormDialog } from './components/prospect-form-dialog';
+import { ProspectFormDialog, ProspectFormValues } from './components/prospect-form-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,11 +18,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-const statusOptions: (ProspectStatus | 'All')[] = ['All', 'New', 'Contacted', 'In-Progress', 'Won', 'Lost'];
-const tempOptions: (WarmColdStatus | 'All')[] = ['All', 'Hot', 'Cold'];
-
 export default function ProspectsPage() {
   const { prospects, isLoading, addProspect, updateProspect, deleteProspect } = useProspects();
+  const { options } = useSettings();
+  
+  // Use configurable status options or fallback to defaults
+  const statusOptions: (ProspectStatus | 'All')[] = ['All', ...(options?.statuses as ProspectStatus[] || ['New', 'Contacted', 'In-Progress', 'Won', 'Lost'])];
+  const tempOptions: (WarmColdStatus | 'All')[] = ['All', 'Hot', 'Cold'];
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<ProspectStatus | 'All'>('All');
   const [tempFilter, setTempFilter] = useState<WarmColdStatus | 'All'>('All');
@@ -58,11 +61,19 @@ export default function ProspectsPage() {
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (data: Omit<Prospect, 'id' | 'created_at' | 'date_added'>) => {
+  const handleFormSubmit = (data: ProspectFormValues) => {
+    // Convert ProspectFormValues to the format expected by addProspect/updateProspect
+    const prospectData = {
+      ...data,
+      current_status: data.current_status as ProspectStatus, // Cast string back to ProspectStatus
+      last_contact_date: data.last_contact_date || undefined, // Convert null to undefined
+      follow_up_date: data.follow_up_date || undefined, // Convert null to undefined
+    };
+    
     if (editingProspect) {
-      updateProspect(editingProspect.id, data);
+      updateProspect(editingProspect.id, prospectData);
     } else {
-      addProspect(data);
+      addProspect(prospectData);
     }
     setIsFormOpen(false);
     setEditingProspect(null);
@@ -166,4 +177,3 @@ export default function ProspectsPage() {
     </main>
   );
 }
-
