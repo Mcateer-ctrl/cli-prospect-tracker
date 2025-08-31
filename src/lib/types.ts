@@ -20,4 +20,5 @@ export interface Prospect {
 
 export interface ProspectOptions {
     sources: string[];
+    statuses: string[];
 }

@@ -14,17 +14,22 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 const settingsSchema = z.object({
     sources: z.array(z.object({
         name: z.string().min(1, "Source name cannot be empty."),
+    })),
+    statuses: z.array(z.object({
+        name: z.string().min(1, "Status name cannot be empty."),
     }))
 });
 
 export default function SettingsPage() {
-    const { options, isLoading, addSource, deleteSource, updateSources } = useSettings();
+    const { options, isLoading, addSource, deleteSource, updateSources, addStatus, deleteStatus, updateStatuses } = useSettings();
     const [newSource, setNewSource] = useState('');
+    const [newStatus, setNewStatus] = useState('');
 
     const form = useForm({
         resolver: zodResolver(settingsSchema),
         values: {
             sources: options?.sources.map(s => ({ name: s })) || [],
+            statuses: options?.statuses.map(s => ({ name: s })) || [],
         },
     });
 
@@ -42,6 +47,17 @@ export default function SettingsPage() {
     
     const handleDeleteSource = (sourceName: string) => {
         deleteSource(sourceName);
+    }
+
+    const handleAddNewStatus = () => {
+        if(newStatus.trim() !== '') {
+            addStatus(newStatus);
+            setNewStatus('');
+        }
+    }
+    
+    const handleDeleteStatus = (statusName: string) => {
+        deleteStatus(statusName);
     }
     
     if (isLoading) {
@@ -85,6 +101,38 @@ export default function SettingsPage() {
                         <Button onClick={handleAddNewSource}>
                             <PlusCircle className="mr-2 h-4 w-4"/>
                             Add Source
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Prospect Statuses</CardTitle>
+                    <CardDescription>Add, edit, or remove the status options available in the prospect form.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <div className="space-y-2">
+                        {options?.statuses.map((status, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <Input disabled value={status} className="flex-1" />
+                                <Button variant="ghost" size="icon" onClick={() => handleDeleteStatus(status)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-4">
+                        <Input 
+                            value={newStatus}
+                            onChange={(e) => setNewStatus(e.target.value)}
+                            placeholder="Add a new status"
+                            className="flex-1"
+                        />
+                        <Button onClick={handleAddNewStatus}>
+                            <PlusCircle className="mr-2 h-4 w-4"/>
+                            Add Status
                         </Button>
                     </div>
                 </CardContent>

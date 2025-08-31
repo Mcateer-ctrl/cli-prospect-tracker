@@ -42,7 +42,7 @@ import { format } from 'date-fns';
 const prospectSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   source: z.string(),
-  current_status: z.enum(['New', 'Contacted', 'In-Progress', 'Won', 'Lost']),
+  current_status: z.string().min(1, 'Status is required.'),
   warm_cold_status: z.enum(['Hot', 'Cold']),
   last_contact_date: z.date().optional().nullable(),
   follow_up_date: z.date().optional().nullable(),
@@ -51,7 +51,7 @@ const prospectSchema = z.object({
   pain_points: z.string().optional(),
 });
 
-type ProspectFormValues = Omit<z.infer<typeof prospectSchema>, 'last_contact_date' | 'follow_up_date'> & {
+export type ProspectFormValues = Omit<z.infer<typeof prospectSchema>, 'last_contact_date' | 'follow_up_date'> & {
     last_contact_date?: string | null;
     follow_up_date?: string | null;
 }
@@ -63,11 +63,13 @@ interface ProspectFormDialogProps {
   prospect: Prospect | null;
 }
 
-const statusOptions: ProspectStatus[] = ['New', 'Contacted', 'In-Progress', 'Won', 'Lost'];
 const tempOptions: WarmColdStatus[] = ['Hot', 'Cold'];
 
 export function ProspectFormDialog({ isOpen, onOpenChange, onSubmit, prospect }: ProspectFormDialogProps) {
   const { options, isLoading: isLoadingSettings } = useSettings();
+  
+  // Use configurable status options or fallback to defaults
+  const statusOptions: ProspectStatus[] = (options?.statuses as ProspectStatus[]) || ['New', 'Contacted', 'In-Progress', 'Won', 'Lost'];
   
   const form = useForm<z.infer<typeof prospectSchema>>({
     resolver: zodResolver(prospectSchema),
